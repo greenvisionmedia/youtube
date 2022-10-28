@@ -1,44 +1,43 @@
 /**
  * A lightweight youtube embed. Still should feel the same to the user, just MUCH faster to initialize and paint.
+ * Forked by GV from https://github.com/justinribeiro/lite-youtube
+ * Changed to data-attributes from custom attributes for consistency with other GV scripts
+ * Added data-thumbnail = "..." instead of style="background: url("...")"
  */
- class LiteYTEmbed extends HTMLElement {
+class GreenYtEmbed extends HTMLElement {
     connectedCallback() {
-        this.videoId = this.getAttribute('videoid');
+        this.videoId = this.dataset.id;
+        this.thumbnail = this.dataset.thumbnail;
 
-        let playBtnEl = this.querySelector('.lty-playbtn');
+        let playBtnEl = this.querySelector('.gyt-playbtn');
         // A label for the button takes priority over a [playlabel] attribute on the custom-element
-        this.playLabel = (playBtnEl && playBtnEl.textContent.trim()) || this.getAttribute('playlabel') || 'Play';
+        this.playLabel = (playBtnEl && playBtnEl.textContent.trim()) || this.dataset.playlabel || 'Play';
 
-        /**
-         * Lo, the youtube placeholder image!  (aka the thumbnail, poster image, etc)
-         *
-         * See https://github.com/paulirish/lite-youtube-embed/blob/master/youtube-thumbnail-urls.md
-         *
-         * TODO: Do the sddefault->hqdefault fallback
-         *       - When doing this, apply referrerpolicy (https://github.com/ampproject/amphtml/pull/3940)
-         * TODO: Consider using webp if supported, falling back to jpg
-         */
-        if (!this.style.backgroundImage) {
-          this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`;
+        // Set the thumbnail URL if it is given, otherwise use youtube's thumbnail
+        if (this.thumbnail) {
+            this.style.backgroundImage = `url("${thumbnail}")`;
+        }
+        else {
+            this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`
         }
 
         // Set up play button, and its visually hidden label
         if (!playBtnEl) {
             playBtnEl = document.createElement('button');
             playBtnEl.type = 'button';
-            playBtnEl.classList.add('lty-playbtn');
+            playBtnEl.classList.add('gyt-playbtn');
             this.append(playBtnEl);
         }
         if (!playBtnEl.textContent) {
             const playBtnLabelEl = document.createElement('span');
-            playBtnLabelEl.className = 'lyt-visually-hidden';
+            playBtnLabelEl.className = 'hide-visually';
             playBtnLabelEl.textContent = this.playLabel;
             playBtnEl.append(playBtnLabelEl);
         }
         playBtnEl.removeAttribute('href');
 
         // On hover (or tap), warm up the TCP connections we're (likely) about to use.
-        this.addEventListener('pointerover', LiteYTEmbed.warmConnections, {once: true});
+        this.addEventListener('pointerover', GreenYtEmbed.warmConnections, { once: true });
 
         // Once the user clicks, add the real iframe and drop our play button
         // TODO: In the future we could be like amp-youtube and silently swap in the iframe during idle time
@@ -70,23 +69,20 @@
      * Since the embed's network requests load within its iframe,
      *   preload/prefetch'ing them outside the iframe will only cause double-downloads.
      * So, the best we can do is warm up a few connections to origins that are in the critical path.
-     *
-     * Maybe `<link rel=preload as=document>` would work, but it's unsupported: http://crbug.com/593267
-     * But TBH, I don't think it'll happen soon with Site Isolation and split caches adding serious complexity.
      */
     static warmConnections() {
-        if (LiteYTEmbed.preconnected) return;
+        if (GreenYtEmbed.preconnected) return;
 
         // The iframe document and most of its subresources come right off youtube.com
-        LiteYTEmbed.addPrefetch('preconnect', 'https://www.youtube-nocookie.com');
+        GreenYtEmbed.addPrefetch('preconnect', 'https://www.youtube-nocookie.com');
         // The botguard script is fetched off from google.com
-        LiteYTEmbed.addPrefetch('preconnect', 'https://www.google.com');
+        GreenYtEmbed.addPrefetch('preconnect', 'https://www.google.com');
 
         // Not certain if these ad related domains are in the critical path. Could verify with domain-specific throttling.
-        LiteYTEmbed.addPrefetch('preconnect', 'https://googleads.g.doubleclick.net');
-        LiteYTEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net');
+        GreenYtEmbed.addPrefetch('preconnect', 'https://googleads.g.doubleclick.net');
+        GreenYtEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net');
 
-        LiteYTEmbed.preconnected = true;
+        GreenYtEmbed.preconnected = true;
     }
 
     fetchYTPlayerApi() {
@@ -125,11 +121,11 @@
         });
     }
 
-    async addIframe(){
-        if (this.classList.contains('lyt-activated')) return;
-        this.classList.add('lyt-activated');
+    async addIframe() {
+        if (this.classList.contains('gyt-activated')) return;
+        this.classList.add('gyt-activated');
 
-        const params = new URLSearchParams(this.getAttribute('params') || []);
+        const params = new URLSearchParams(this.dataset.params || []);
         params.append('autoplay', '1');
         params.append('playsinline', '1');
 
@@ -154,4 +150,4 @@
     }
 }
 // Register custom element
-customElements.define('lite-youtube', LiteYTEmbed);
+customElements.define('green-youtube', GreenYtEmbed);

@@ -1,5 +1,3 @@
-//GV GULPFILE
-
 const gulp = require('gulp'),
     rename = require('gulp-rename'),
     terser = require('gulp-terser'),

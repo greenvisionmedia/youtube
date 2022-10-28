@@ -1,4 +1,4 @@
-lite-youtube {
+green-youtube {
     position: relative;
     display: block;
     contain: content;
@@ -15,7 +15,7 @@ lite-youtube {
 }
 
 /* gradient */
-lite-youtube::before {
+green-youtube::before {
     content: '';
     display: block;
     position: absolute;
@@ -29,12 +29,12 @@ lite-youtube::before {
     transition: all 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
-lite-youtube::after {
+green-youtube::after {
     content: "";
     display: block;
     padding-bottom: calc(100% / (16 / 9));
 }
-lite-youtube > iframe {
+green-youtube > iframe {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -44,7 +44,7 @@ lite-youtube > iframe {
 }
 
 /* play button */
-lite-youtube > .lty-playbtn {
+green-youtube > .gyt-playbtn {
     display: block;
     width: 68px;
     height: 48px;
@@ -62,22 +62,22 @@ lite-youtube > .lty-playbtn {
     border: none;
 }
 
-lite-youtube:hover > .lty-playbtn,
-lite-youtube .lty-playbtn:focus {
+green-youtube:hover > .gyt-playbtn,
+green-youtube .gyt-playbtn:focus {
     filter: none;
 }
 
 /* Post-click styles */
-lite-youtube.lyt-activated {
+green-youtube.gyt-activated {
     cursor: unset;
 }
-lite-youtube.lyt-activated::before,
-lite-youtube.lyt-activated > .lty-playbtn {
+green-youtube.gyt-activated::before,
+green-youtube.gyt-activated > .gyt-playbtn {
     opacity: 0;
     pointer-events: none;
 }
 
-.lyt-visually-hidden {
+.hide-visually {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     height: 1px;
