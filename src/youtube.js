@@ -11,14 +11,16 @@ class GreenYtEmbed extends HTMLElement {
 
         let playBtnEl = this.querySelector('.gyt-playbtn');
         // A label for the button takes priority over a [playlabel] attribute on the custom-element
-        this.playLabel = (playBtnEl && playBtnEl.textContent.trim()) || this.dataset.playlabel || 'Play';
+        this.playLabel =
+            (playBtnEl && playBtnEl.textContent.trim()) ||
+            this.dataset.playlabel ||
+            'Play';
 
         // Set the thumbnail URL if it is given, otherwise use youtube's thumbnail
         if (this.thumbnail) {
             this.style.backgroundImage = `url("${thumbnail}")`;
-        }
-        else {
-            this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`
+        } else {
+            this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`;
         }
 
         // Set up play button, and its visually hidden label
@@ -37,7 +39,9 @@ class GreenYtEmbed extends HTMLElement {
         playBtnEl.removeAttribute('href');
 
         // On hover (or tap), warm up the TCP connections we're (likely) about to use.
-        this.addEventListener('pointerover', GreenYtEmbed.warmConnections, { once: true });
+        this.addEventListener('pointerover', GreenYtEmbed.warmConnections, {
+            once: true,
+        });
 
         // Once the user clicks, add the real iframe and drop our play button
         // TODO: In the future we could be like amp-youtube and silently swap in the iframe during idle time
@@ -48,7 +52,9 @@ class GreenYtEmbed extends HTMLElement {
         // However Safari desktop and most/all mobile browsers do not successfully track the user gesture of clicking through the creation/loading of the iframe,
         // so they don't autoplay automatically. Instead we must load an additional 2 sequential JS files (1KB + 165KB) (un-br) for the YT Player API
         // TODO: Try loading the the YT API in parallel with our iframe and then attaching/playing it. #82
-        this.needsYTApiForAutoplay = navigator.vendor.includes('Apple') || navigator.userAgent.includes('Mobi');
+        this.needsYTApiForAutoplay =
+            navigator.vendor.includes('Apple') ||
+            navigator.userAgent.includes('Mobi');
     }
 
     /**
@@ -74,13 +80,22 @@ class GreenYtEmbed extends HTMLElement {
         if (GreenYtEmbed.preconnected) return;
 
         // The iframe document and most of its subresources come right off youtube.com
-        GreenYtEmbed.addPrefetch('preconnect', 'https://www.youtube-nocookie.com');
+        GreenYtEmbed.addPrefetch(
+            'preconnect',
+            'https://www.youtube-nocookie.com'
+        );
         // The botguard script is fetched off from google.com
         GreenYtEmbed.addPrefetch('preconnect', 'https://www.google.com');
 
         // Not certain if these ad related domains are in the critical path. Could verify with domain-specific throttling.
-        GreenYtEmbed.addPrefetch('preconnect', 'https://googleads.g.doubleclick.net');
-        GreenYtEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net');
+        GreenYtEmbed.addPrefetch(
+            'preconnect',
+            'https://googleads.g.doubleclick.net'
+        );
+        GreenYtEmbed.addPrefetch(
+            'preconnect',
+            'https://static.doubleclick.net'
+        );
 
         GreenYtEmbed.preconnected = true;
     }
@@ -92,7 +107,7 @@ class GreenYtEmbed extends HTMLElement {
             var el = document.createElement('script');
             el.src = 'https://www.youtube.com/iframe_api';
             el.async = true;
-            el.onload = _ => {
+            el.onload = (_) => {
                 YT.ready(res);
             };
             el.onerror = rej;
@@ -104,7 +119,7 @@ class GreenYtEmbed extends HTMLElement {
         this.fetchYTPlayerApi();
         await this.ytApiPromise;
 
-        const videoPlaceholderEl = document.createElement('div')
+        const videoPlaceholderEl = document.createElement('div');
         this.append(videoPlaceholderEl);
 
         const paramsObj = Object.fromEntries(params.entries());
@@ -114,10 +129,10 @@ class GreenYtEmbed extends HTMLElement {
             videoId: this.videoId,
             playerVars: paramsObj,
             events: {
-                'onReady': event => {
+                onReady: (event) => {
                     event.target.playVideo();
-                }
-            }
+                },
+            },
         });
     }
 
@@ -138,11 +153,14 @@ class GreenYtEmbed extends HTMLElement {
         iframeEl.height = 315;
         // No encoding necessary as [title] is safe. https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#:~:text=Safe%20HTML%20Attributes%20include
         iframeEl.title = this.playLabel;
-        iframeEl.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+        iframeEl.allow =
+            'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
         iframeEl.allowFullscreen = true;
         // AFAIK, the encoding here isn't necessary for XSS, but we'll do it only because this is a URL
         // https://stackoverflow.com/q/64959723/89484
-        iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(this.videoId)}?${params.toString()}`;
+        iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
+            this.videoId
+        )}?${params.toString()}`;
         this.append(iframeEl);
 
         // Set focus for a11y
