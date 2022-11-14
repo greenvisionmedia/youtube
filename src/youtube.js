@@ -1,42 +1,36 @@
 /**
+ * gv_youtube
+ *
  * A lightweight youtube embed. Still should feel the same to the user, just MUCH faster to initialize and paint.
  * Forked by GV from https://github.com/justinribeiro/lite-youtube
  * Changed to data-attributes from custom attributes for consistency with other GV scripts
  * Added data-thumbnail = "..." instead of style="background: url("...")"
+ * Simplified the label logic to always have a visually hidden play label
  */
+
 class GreenYtEmbed extends HTMLElement {
     connectedCallback() {
-        this.videoId = this.dataset.id;
-        this.thumbnail = this.dataset.thumbnail;
-
-        let playBtnEl = this.querySelector('.gyt-playbtn');
-        // A label for the button takes priority over a [playlabel] attribute on the custom-element
-        this.playLabel =
-            (playBtnEl && playBtnEl.textContent.trim()) ||
-            this.dataset.playlabel ||
-            'Play';
-
         // Set the thumbnail URL if it is given, otherwise use youtube's thumbnail
-        if (this.thumbnail) {
-            this.style.backgroundImage = `url("${thumbnail}")`;
+        if (this.hasAttribute('data-thumbnail')) {
+            this.style.backgroundImage = `url("${this.dataset.thumbnail}")`;
         } else {
-            this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`;
+            this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.dataset.id}/hqdefault.jpg")`;
         }
 
-        // Set up play button, and its visually hidden label
-        if (!playBtnEl) {
-            playBtnEl = document.createElement('button');
-            playBtnEl.type = 'button';
-            playBtnEl.classList.add('gyt-playbtn');
-            this.append(playBtnEl);
-        }
-        if (!playBtnEl.textContent) {
-            const playBtnLabelEl = document.createElement('span');
-            playBtnLabelEl.className = 'hide-visually';
-            playBtnLabelEl.textContent = this.playLabel;
-            playBtnEl.append(playBtnLabelEl);
-        }
-        playBtnEl.removeAttribute('href');
+        // Set up play button, and the youtube button SVG and the visually hidden label
+        let playBtnEl = document.createElement('button');
+        playBtnEl.type = 'button';
+        playBtnEl.classList.add('gyt-playbtn');
+        playBtnEl.insertAdjacentHTML(
+            'beforeend',
+            '<svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>'
+        );
+        this.append(playBtnEl);
+
+        let playBtnLabelEl = document.createElement('span');
+        playBtnLabelEl.className = 'hide-visually';
+        playBtnLabelEl.textContent = 'Play';
+        playBtnEl.append(playBtnLabelEl);
 
         // On hover (or tap), warm up the TCP connections we're (likely) about to use.
         this.addEventListener('pointerover', GreenYtEmbed.warmConnections, {
@@ -126,7 +120,7 @@ class GreenYtEmbed extends HTMLElement {
 
         new YT.Player(videoPlaceholderEl, {
             width: '100%',
-            videoId: this.videoId,
+            videoId: this.dataset.id,
             playerVars: paramsObj,
             events: {
                 onReady: (event) => {
@@ -151,15 +145,14 @@ class GreenYtEmbed extends HTMLElement {
         const iframeEl = document.createElement('iframe');
         iframeEl.width = 560;
         iframeEl.height = 315;
-        // No encoding necessary as [title] is safe. https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#:~:text=Safe%20HTML%20Attributes%20include
-        iframeEl.title = this.playLabel;
+        iframeEl.title = 'Embedded Youtube video';
         iframeEl.allow =
             'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
         iframeEl.allowFullscreen = true;
         // AFAIK, the encoding here isn't necessary for XSS, but we'll do it only because this is a URL
         // https://stackoverflow.com/q/64959723/89484
         iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
-            this.videoId
+            this.dataset.id
         )}?${params.toString()}`;
         this.append(iframeEl);
 

@@ -2,7 +2,6 @@ green-youtube {
     position: relative;
     display: block;
     contain: content;
-    background-color: #000;
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -49,7 +48,6 @@ green-youtube > .gyt-playbtn {
     width: 68px;
     height: 48px;
     position: absolute;
-    cursor: pointer;
     transform: translate3d(-50%, -50%, 0);
     top: 50%;
     left: 50%;
