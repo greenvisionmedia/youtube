@@ -1,5 +1,5 @@
 /**
- * gv_youtube
+ * gv-youtube
  *
  * A lightweight youtube embed. Still should feel the same to the user, just MUCH faster to initialize and paint.
  * Forked by GV from https://github.com/justinribeiro/lite-youtube
@@ -8,6 +8,9 @@
  * Simplified the label logic to always have a visually hidden play label
  */
 {
+    let yt = document.querySelector('.gv-youtube');
+    yt.innerHTML = '<gv-youtube></gv-youtube>';
+
     class GreenYtEmbed extends HTMLElement {
         connectedCallback() {
             //Add the styles-formerly-in-their-own-file to the head
@@ -166,5 +169,5 @@
         }
     }
     // Register custom element
-    customElements.define('green-youtube', GreenYtEmbed);
+    customElements.define('gv-youtube', GreenYtEmbed);
 }
