@@ -3,9 +3,7 @@
     "version": "1.0.0",
     "description": "Low carbon youtube embed",
     "main": "youtube.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "github.com/greenvisionmedia/youtube"

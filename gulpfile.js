@@ -1,9 +1,9 @@
-const gulp = require('gulp'),
-    rename = require('gulp-rename'),
-    terser = require('gulp-terser'),
-    cssnano = require('gulp-cssnano'),
-    replace = require('gulp-replace'),
-    fs = require('fs');
+import gulp from 'gulp';
+import rename from 'gulp-rename';
+import terser from 'gulp-terser';
+import cssnano from 'gulp-cssnano';
+import replace from 'gulp-replace';
+import fs from 'fs';
 
 function styles() {
     return gulp

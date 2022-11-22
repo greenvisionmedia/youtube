@@ -8,16 +8,17 @@
  * Simplified the label logic to always have a visually hidden play label
  */
 {
-    let yt = document.querySelector('.gv-youtube');
-    yt.innerHTML = '<gv-youtube></gv-youtube>';
+    // Adds the markup and styling via JS
+    // This is very marginally slower, and doesn't 'separate concerns,' but the benefit is ease of use in Webflow
+    let youtube = document.querySelector('.gv-youtube');
+    youtube.innerHTML = '<gv-youtube></gv-youtube>';
+    
+    const styles = document.createElement('style');
+    styles.innerHTML = `{{youtube.css}}`; //uses gulp to replace this string with the css
+    document.head.append(styles);
 
     class GreenYtEmbed extends HTMLElement {
         connectedCallback() {
-            //Add the styles-formerly-in-their-own-file to the head
-            const styles = document.createElement('style');
-            styles.innerHTML = `{{youtube.css}}`; //uses gulp to replace this string with the css
-            document.head.append(styles);
-
             // Set the thumbnail URL if it is given, otherwise use youtube's thumbnail
             if (this.hasAttribute('data-thumbnail')) {
                 this.style.backgroundImage = `url("${this.dataset.thumbnail}")`;
