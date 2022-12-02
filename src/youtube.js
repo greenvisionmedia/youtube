@@ -7,11 +7,13 @@
  * Added data-thumbnail = "..." instead of style="background: url("...")"
  * Simplified the label logic to always have a visually hidden play label
  */
-{
+()=>{
     // Adds the markup and styling via JS
     // This is very marginally slower, and doesn't 'separate concerns,' but the benefit is ease of use in Webflow
     let youtube = document.querySelector('.gv-youtube');
     youtube.innerHTML = '<gv-youtube></gv-youtube>';
+
+    if(!youtube) return;
     
     const styles = document.createElement('style');
     styles.innerHTML = `{{youtube.css}}`; //uses gulp to replace this string with the css
