@@ -4,17 +4,18 @@
  * A lightweight youtube embed. Still should feel the same to the user, just MUCH faster to initialize and paint.
  * Forked by GV from https://github.com/justinribeiro/lite-youtube
  * Changed to data-attributes from custom attributes for consistency with other GV scripts
- * Added data-thumbnail = "..." instead of style="background: url("...")"
+ * Added data-thumb = "..." instead of style="background: url("...")"
  * Simplified the label logic to always have a visually hidden play label
  */
-()=>{
+() => {
+    'use strict';
     // Adds the markup and styling via JS
     // This is very marginally slower, and doesn't 'separate concerns,' but the benefit is ease of use in Webflow
     let youtube = document.querySelector('.gv-youtube');
     youtube.innerHTML = '<gv-youtube></gv-youtube>';
 
-    if(!youtube) return;
-    
+    if (!youtube) return;
+
     const styles = document.createElement('style');
     styles.innerHTML = `{{youtube.css}}`; //uses gulp to replace this string with the css
     document.head.append(styles);
@@ -22,7 +23,7 @@
     class GreenYtEmbed extends HTMLElement {
         connectedCallback() {
             // Set the thumbnail URL if it is given, otherwise use youtube's thumbnail
-            if (this.hasAttribute('data-thumbnail')) {
+            if (this.hasAttribute('data-thumb')) {
                 this.style.backgroundImage = `url("${this.dataset.thumbnail}")`;
             } else {
                 this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.dataset.id}/hqdefault.jpg")`;
@@ -173,4 +174,4 @@
     }
     // Register custom element
     customElements.define('gv-youtube', GreenYtEmbed);
-}
+};
