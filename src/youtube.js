@@ -23,10 +23,10 @@
     class GreenYtEmbed extends HTMLElement {
         connectedCallback() {
             // Set the thumbnail URL if it is given, otherwise use youtube's thumbnail
-            if (this.hasAttribute('data-thumb')) {
-                this.style.backgroundImage = `url("${this.dataset.thumbnail}")`;
+            if (this.parentElement.dataset.thumbnail) {
+                this.style.backgroundImage = `url("${this.parentElement.dataset.thumbnail}")`;
             } else {
-                this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.dataset.id}/hqdefault.jpg")`;
+                this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.parentElement.dataset.id}/hqdefault.jpg")`;
             }
 
             // Set up play button, and the youtube button SVG and the visually hidden label
@@ -132,7 +132,7 @@
 
             new YT.Player(videoPlaceholderEl, {
                 width: '100%',
-                videoId: this.dataset.id,
+                videoId: this.parentElement.dataset.id,
                 playerVars: paramsObj,
                 events: {
                     onReady: (event) => {
@@ -146,7 +146,7 @@
             if (this.classList.contains('gyt-activated')) return;
             this.classList.add('gyt-activated');
 
-            const params = new URLSearchParams(this.dataset.params || []);
+            const params = new URLSearchParams(this.parentElement.dataset.params || []);
             params.append('autoplay', '1');
             params.append('playsinline', '1');
 
@@ -164,7 +164,7 @@
             // AFAIK, the encoding here isn't necessary for XSS, but we'll do it only because this is a URL
             // https://stackoverflow.com/q/64959723/89484
             iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
-                this.dataset.id
+                this.parentElement.dataset.id
             )}?${params.toString()}`;
             this.append(iframeEl);
 

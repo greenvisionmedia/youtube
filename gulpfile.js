@@ -7,7 +7,7 @@ import fs from 'fs';
 
 function styles() {
     return gulp
-        .src('./src/*.css')
+        .src('src/*.css')
         .pipe(cssnano())
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest('./public'));
@@ -15,7 +15,7 @@ function styles() {
 
 function scripts() {
     return gulp
-        .src('./src/*.js')
+        .src('src/*.js')
         .pipe(
             replace('{{youtube.css}}', () => {
                 return `${fs.readFileSync('./public/youtube.min.css', 'utf8')}`;
